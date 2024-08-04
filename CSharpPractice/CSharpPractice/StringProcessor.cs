@@ -8,7 +8,14 @@ namespace CSharpPractice
         {
             if (string.IsNullOrEmpty(input))
             {
-                return input;
+                return "Ошибка: пустая строка.";
+            }
+            
+            var invalidChars = GetInvalidChars(input);
+            
+            if (invalidChars.Length > 0)
+            {
+                return $"Ошибка: найдены неподходящие символы - {invalidChars}.";
             }
 
             var length = input.Length;
@@ -36,6 +43,19 @@ namespace CSharpPractice
             span.CopyTo(array);
             Array.Reverse(array);
             return new string(array);
+        }
+        
+        private static string GetInvalidChars(string input)
+        {
+            var invalidChars = new StringBuilder();
+            foreach (char c in input)
+            {
+                if (c < 'a' || c > 'z')
+                {
+                    invalidChars.Append(c);
+                }
+            }
+            return invalidChars.ToString();
         }
     }
 }
