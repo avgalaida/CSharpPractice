@@ -74,7 +74,7 @@ namespace CSharpPractice
 
         private static Dictionary<char, int> GetCharCounts(string input)
         {
-            var charCounts = new Dictionary<char, int>(26); //26 букв в алфавите.
+            var charCounts = new Dictionary<char, int>(26); // 26 букв в алфавите.
             foreach (var c in input)
             {
                 if (charCounts.TryGetValue(c, out int count))
