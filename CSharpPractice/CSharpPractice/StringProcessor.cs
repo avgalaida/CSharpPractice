@@ -20,6 +20,7 @@ namespace CSharpPractice
 
             var processedString = ProcessString(input);
             var charCounts = GetCharCounts(processedString);
+            var longestVowelSubstring = GetLongestVowelSubstring(processedString);
 
             var result = new StringBuilder();
             result.AppendLine(processedString);
@@ -27,7 +28,7 @@ namespace CSharpPractice
             {
                 result.AppendLine($"{pair.Key}: {pair.Value}");
             }
-
+            result.AppendLine($"Подстрока: {longestVowelSubstring}");
             return result.ToString();
         }
 
@@ -87,6 +88,33 @@ namespace CSharpPractice
                 }
             }
             return charCounts;
+        }
+        
+        private static string GetLongestVowelSubstring(string input)
+        {
+            const string vowels = "aeiouy";
+            var firstVowelIndex = -1;
+            var lastVowelIndex = -1;
+            var maxLength = 0;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (vowels.Contains(input[i]))
+                {
+                    if (firstVowelIndex == -1)
+                    {
+                        firstVowelIndex = i;
+                    }
+                    lastVowelIndex = i;
+                }
+            }
+
+            if (firstVowelIndex != -1 && lastVowelIndex != -1 && lastVowelIndex > firstVowelIndex)
+            {
+                maxLength = lastVowelIndex - firstVowelIndex + 1;
+            }
+
+            return maxLength == 0 ? "" : input.Substring(firstVowelIndex, maxLength);
         }
     }
 }
