@@ -22,8 +22,7 @@ namespace CSharpPractice
             var charCounts = GetCharCounts(processedString);
 
             var result = new StringBuilder();
-            result.AppendLine($"Обработанная строка: {processedString}");
-            result.AppendLine("Информация о количестве повторений каждого символа:");
+            result.AppendLine(processedString);
             foreach (var pair in charCounts)
             {
                 result.AppendLine($"{pair.Key}: {pair.Value}");
