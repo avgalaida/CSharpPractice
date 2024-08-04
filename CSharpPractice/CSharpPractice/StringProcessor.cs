@@ -93,28 +93,29 @@ namespace CSharpPractice
         private static string GetLongestVowelSubstring(string input)
         {
             const string vowels = "aeiouy";
-            var firstVowelIndex = -1;
-            var lastVowelIndex = -1;
             var maxLength = 0;
+            var startIndex = -1;
 
-            for (int i = 0; i < input.Length; i++)
+            var left = 0;
+            var right = input.Length - 1;
+            
+            while (left < input.Length && !vowels.Contains(input[left]))
             {
-                if (vowels.Contains(input[i]))
-                {
-                    if (firstVowelIndex == -1)
-                    {
-                        firstVowelIndex = i;
-                    }
-                    lastVowelIndex = i;
-                }
+                left++;
+            }
+            
+            while (right >= 0 && !vowels.Contains(input[right]))
+            {
+                right--;
+            }
+            
+            if (left < right)
+            {
+                maxLength = right - left + 1;
+                startIndex = left;
             }
 
-            if (firstVowelIndex != -1 && lastVowelIndex != -1 && lastVowelIndex > firstVowelIndex)
-            {
-                maxLength = lastVowelIndex - firstVowelIndex + 1;
-            }
-
-            return maxLength == 0 ? "" : input.Substring(firstVowelIndex, maxLength);
+            return startIndex == -1 ? "" : input.Substring(startIndex, maxLength);
         }
     }
 }
