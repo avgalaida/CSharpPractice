@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace CSharpPractice
 {
     public static class StringProcessor
@@ -10,26 +12,29 @@ namespace CSharpPractice
             }
 
             var length = input.Length;
+            var sb = new StringBuilder();
 
             if (length % 2 == 0)
             {
                 var mid = length / 2;
-                return Reverse(input.AsSpan(0, mid)) + Reverse(input.AsSpan(mid));
+                sb.Append(Reverse(input.AsSpan(0, mid)));
+                sb.Append(Reverse(input.AsSpan(mid)));
             }
             else
             {
                 var reversed = Reverse(input.AsSpan());
-                return reversed + input;
+                sb.Append(reversed);
+                sb.Append(input);
             }
+
+            return sb.ToString();
         }
 
         private static string Reverse(ReadOnlySpan<char> span)
         {
             var array = new char[span.Length];
-            for (int i = 0, j = span.Length - 1; i < span.Length; i++, j--)
-            {
-                array[i] = span[j];
-            }
+            span.CopyTo(array);
+            Array.Reverse(array);
             return new string(array);
         }
     }
