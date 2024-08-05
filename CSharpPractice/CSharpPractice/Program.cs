@@ -2,7 +2,7 @@
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Введите строку:");
             var input = Console.ReadLine();
@@ -13,12 +13,15 @@
                 Console.WriteLine(validationMessage);
                 return;
             }
-
-            var (processedString, charCounts, longestVowelSubstring) = StringProcessor.Process(input);
-
+            
+            var processedString = StringProcessor.ProcessString(input);
+            var charCounts = StringProcessor.GetCharCounts(processedString);
+            var longestVowelSubstring = StringProcessor.GetLongestVowelSubstring(processedString);
+            
             var algorithm = GetSortAlgorithmFromUser();
-
             var sortedString = StringProcessor.SortString(processedString, algorithm);
+
+            var reducedString = await StringProcessor.GetReducedString(processedString);
 
             var result = new System.Text.StringBuilder();
             result.AppendLine($"Обработанная строка: {processedString}");
@@ -29,6 +32,7 @@
             }
             result.AppendLine($"Самая длинная подстрока, начинающаяся и заканчивающаяся на гласную: {longestVowelSubstring}");
             result.AppendLine($"Отсортированная обработанная строка: {sortedString}");
+            result.AppendLine($"Урезанная обработанная строка: {reducedString}");
 
             Console.WriteLine(result.ToString());
         }

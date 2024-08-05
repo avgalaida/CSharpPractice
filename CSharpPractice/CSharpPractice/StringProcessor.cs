@@ -10,33 +10,27 @@ namespace CSharpPractice
 
     public static class StringProcessor
     {
+        private static readonly HttpClientHandler httpClientHandler = new HttpClientHandler();
+        private static readonly HttpClient httpClient = new HttpClient(httpClientHandler);
+
         public static string? ValidateString(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
                 return "Ошибка: пустая строка.";
             }
-            
+
             var invalidChars = GetInvalidChars(input);
-            
+
             if (invalidChars.Length > 0)
             {
                 return $"Ошибка: найдены неподходящие символы - {invalidChars}.";
             }
 
-            return null; 
+            return null;
         }
 
-        public static (string processedString, Dictionary<char, int> charCounts, string longestVowelSubstring) Process(string input)
-        {
-            var processedString = ProcessString(input);
-            var charCounts = GetCharCounts(processedString);
-            var longestVowelSubstring = GetLongestVowelSubstring(processedString);
-
-            return (processedString, charCounts, longestVowelSubstring);
-        }
-
-        private static string ProcessString(string input)
+        public static string ProcessString(string input)
         {
             var length = input.Length;
             var sb = new StringBuilder(length * 2);
@@ -77,7 +71,7 @@ namespace CSharpPractice
             return invalidChars.ToString();
         }
 
-        private static Dictionary<char, int> GetCharCounts(string input)
+        public static Dictionary<char, int> GetCharCounts(string input)
         {
             var charCounts = new Dictionary<char, int>(26); // 26 букв в алфавите
             foreach (var c in input)
@@ -94,7 +88,7 @@ namespace CSharpPractice
             return charCounts;
         }
 
-        private static string GetLongestVowelSubstring(string input)
+        public static string GetLongestVowelSubstring(string input)
         {
             const string vowels = "aeiouy";
             int firstVowelIndex = -1;
@@ -134,6 +128,24 @@ namespace CSharpPractice
                     break;
             }
             return new string(charArray);
+        }
+
+        public static async Task<string> GetReducedString(string input)
+        {
+            int index;
+            try
+            {
+                var response = await httpClient.GetStringAsync(
+                    "https://www.randomnumberapi.com/api/v1.0/random?min=0&max=" + (input.Length - 1));
+                index = int.Parse(response.Trim('[', ']'));
+            }
+            catch
+            {
+                var random = new Random();
+                index = random.Next(0, input.Length);
+            }
+
+            return input.Remove(index, 1);
         }
     }
 }
