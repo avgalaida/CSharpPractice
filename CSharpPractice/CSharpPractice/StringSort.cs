@@ -4,38 +4,34 @@ namespace CSharpPractice
     {
         public static void QuickSort(char[] array, int low, int high)
         {
-            var stack = new Stack<int>();
-            stack.Push(low);
-            stack.Push(high);
+            var stack = new Stack<Range>();
+            stack.Push(new Range(low, high));
 
             while (stack.Count > 0)
             {
-                high = stack.Pop();
-                low = stack.Pop();
+                var range = stack.Pop();
+                low = range.Low;
+                high = range.High;
 
-                int pivotIndex = Partition(array, low, high);
-
-                if (pivotIndex - 1 > low)
+                if (low < high)
                 {
-                    stack.Push(low);
-                    stack.Push(pivotIndex - 1);
-                }
-
-                if (pivotIndex + 1 < high)
-                {
-                    stack.Push(pivotIndex + 1);
-                    stack.Push(high);
+                    int pivotIndex = Partition(array, low, high);
+                    stack.Push(new Range(low, pivotIndex - 1));
+                    stack.Push(new Range(pivotIndex + 1, high));
                 }
             }
         }
 
         private static int Partition(char[] array, int low, int high)
         {
-            char pivot = array[high];
-            int i = low - 1;
+            var mid = low + (high - low) / 2;
+            var pivot = array[mid];
+            Swap(array, mid, high); 
+
+            var i = low - 1;
             for (int j = low; j < high; j++)
             {
-                if (array[j] < pivot)
+                if (array[j] <= pivot)
                 {
                     i++;
                     Swap(array, i, j);
@@ -50,6 +46,18 @@ namespace CSharpPractice
             char temp = array[i];
             array[i] = array[j];
             array[j] = temp;
+        }
+
+        public struct Range
+        {
+            public int Low { get; }
+            public int High { get; }
+
+            public Range(int low, int high)
+            {
+                Low = low;
+                High = high;
+            }
         }
 
         public static char[] TreeSort(char[] array)
