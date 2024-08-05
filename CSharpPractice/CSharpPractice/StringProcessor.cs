@@ -2,9 +2,15 @@ using System.Text;
 
 namespace CSharpPractice
 {
+    public enum SortAlgorithm
+    {
+        QuickSort,
+        TreeSort
+    }
+
     public static class StringProcessor
     {
-        public static string Process(string input)
+        public static string? ValidateString(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -18,18 +24,16 @@ namespace CSharpPractice
                 return $"Ошибка: найдены неподходящие символы - {invalidChars}.";
             }
 
+            return null; 
+        }
+
+        public static (string processedString, Dictionary<char, int> charCounts, string longestVowelSubstring) Process(string input)
+        {
             var processedString = ProcessString(input);
             var charCounts = GetCharCounts(processedString);
             var longestVowelSubstring = GetLongestVowelSubstring(processedString);
 
-            var result = new StringBuilder();
-            result.AppendLine(processedString);
-            foreach (var pair in charCounts)
-            {
-                result.AppendLine($"{pair.Key}: {pair.Value}");
-            }
-            result.AppendLine($"Подстрока: {longestVowelSubstring}");
-            return result.ToString();
+            return (processedString, charCounts, longestVowelSubstring);
         }
 
         private static string ProcessString(string input)
@@ -59,7 +63,7 @@ namespace CSharpPractice
             Array.Reverse(array);
             return new string(array);
         }
-        
+
         private static string GetInvalidChars(string input)
         {
             var invalidChars = new StringBuilder();
@@ -75,7 +79,7 @@ namespace CSharpPractice
 
         private static Dictionary<char, int> GetCharCounts(string input)
         {
-            var charCounts = new Dictionary<char, int>(26); // 26 букв в алфавите.
+            var charCounts = new Dictionary<char, int>(26); // 26 букв в алфавите
             foreach (var c in input)
             {
                 if (charCounts.TryGetValue(c, out int count))
@@ -89,33 +93,47 @@ namespace CSharpPractice
             }
             return charCounts;
         }
-        
+
         private static string GetLongestVowelSubstring(string input)
         {
             const string vowels = "aeiouy";
-            var maxLength = 0;
-            var startIndex = -1;
+            int firstVowelIndex = -1;
+            int lastVowelIndex = -1;
+            int maxLength = 0;
 
-            var left = 0;
-            var right = input.Length - 1;
-            
-            while (left < input.Length && !vowels.Contains(input[left]))
+            for (int i = 0; i < input.Length; i++)
             {
-                left++;
-            }
-            
-            while (right >= 0 && !vowels.Contains(input[right]))
-            {
-                right--;
-            }
-            
-            if (left < right)
-            {
-                maxLength = right - left + 1;
-                startIndex = left;
+                if (vowels.Contains(input[i]))
+                {
+                    if (firstVowelIndex == -1)
+                    {
+                        firstVowelIndex = i;
+                    }
+                    lastVowelIndex = i;
+                }
             }
 
-            return startIndex == -1 ? "" : input.Substring(startIndex, maxLength);
+            if (firstVowelIndex != -1 && lastVowelIndex != -1 && lastVowelIndex > firstVowelIndex)
+            {
+                maxLength = lastVowelIndex - firstVowelIndex + 1;
+            }
+
+            return maxLength == 0 ? "" : input.Substring(firstVowelIndex, maxLength);
+        }
+
+        public static string SortString(string input, SortAlgorithm algorithm)
+        {
+            var charArray = input.ToCharArray();
+            switch (algorithm)
+            {
+                case SortAlgorithm.QuickSort:
+                    StringSort.QuickSort(charArray, 0, charArray.Length - 1);
+                    break;
+                case SortAlgorithm.TreeSort:
+                    charArray = StringSort.TreeSort(charArray);
+                    break;
+            }
+            return new string(charArray);
         }
     }
 }
