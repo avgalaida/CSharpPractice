@@ -1,38 +1,46 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Models;
 using WebApp.Services;
+using WebApp.Models;
 
-namespace WebApp.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class StringProcessingController : ControllerBase
+namespace WebApp.Controllers
 {
-    [HttpGet("process")]
-    public async Task<IActionResult> ProcessString([FromQuery] string input, [FromQuery] int algorithm)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class StringProcessingController : ControllerBase
     {
-        var validationMessage = StringProcessService.ValidateString(input);
-        if (validationMessage != null)
+        private readonly StringProcessService _stringProcessor;
+
+        public StringProcessingController(StringProcessService stringProcessor)
         {
-            return BadRequest(new { message = validationMessage });
+            _stringProcessor = stringProcessor;
         }
 
-        var processedString = StringProcessService.ProcessString(input);
-        var charCounts = StringProcessService.GetCharCounts(processedString);
-        var longestVowelSubstring = StringProcessService.GetLongestVowelSubstring(processedString);
-        var sortAlgorithm = algorithm == 2 ? SortAlgorithmNames.TreeSort : SortAlgorithmNames.QuickSort;
-        var sortedString = StringProcessService.SortString(processedString, sortAlgorithm);
-        var reducedString = await StringProcessService.GetReducedString(sortedString);
-
-        var result = new
+        [HttpGet("process")]
+        public async Task<IActionResult> ProcessString([FromQuery] string input, [FromQuery] int algorithm)
         {
-            processedString,
-            charCounts,
-            longestVowelSubstring,
-            sortedString,
-            reducedString
-        };
+            var validationMessage = _stringProcessor.ValidateString(input);
+            if (validationMessage != null)
+            {
+                return BadRequest(new { message = validationMessage });
+            }
 
-        return Ok(result);
+            var processedString = _stringProcessor.ProcessString(input);
+            var charCounts = _stringProcessor.GetCharCounts(processedString);
+            var longestVowelSubstring = _stringProcessor.GetLongestVowelSubstring(processedString);
+            var sortAlgorithm = algorithm == 2 ? SortAlgorithmNames.TreeSort : SortAlgorithmNames.QuickSort;
+            var sortedString = _stringProcessor.SortString(processedString, sortAlgorithm);
+            var reducedString = await _stringProcessor.GetReducedString(sortedString);
+
+            var result = new
+            {
+                processedString,
+                charCounts,
+                longestVowelSubstring,
+                sortedString,
+                reducedString
+            };
+
+            return Ok(result);
+        }
     }
 }
