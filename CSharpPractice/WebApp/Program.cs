@@ -8,7 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpClient<StringProcessService>();
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<StringProcessService>();
 
 var app = builder.Build();
 

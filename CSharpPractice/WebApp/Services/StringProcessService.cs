@@ -7,11 +7,36 @@ public class StringProcessService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly int _parallelLimit;
+    private int _activeRequests;
 
     public StringProcessService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _configuration = configuration;
+        _parallelLimit = _configuration.GetValue<int>("Settings:ParallelLimit");
+        _activeRequests = 0;
+    }
+
+    public bool CanProcessRequest()
+    {
+        lock (this)
+        {
+            if (_activeRequests >= _parallelLimit)
+            {
+                return false;
+            }
+            _activeRequests++;
+            return true;
+        }
+    }
+
+    public void ReleaseProcessing()
+    {
+        lock (this)
+        {
+            _activeRequests--;
+        }
     }
 
     public string? ValidateString(string input)
@@ -32,7 +57,7 @@ public class StringProcessService
 
         if (!string.IsNullOrEmpty(blacklistedWord))
         {
-            return $"Ошибка: найдено слово из черного списка - {blacklistedWord}.";
+            return $"Ошибка: слово {blacklistedWord} находится в черном списке.";
         }
 
         return null;
